@@ -123,6 +123,14 @@ trait Stream[+A] {
       case _ => None
     }
 
+  def zipWithA[AA >: A](s2: Stream[AA])(f:(AA,AA) => AA): Stream[AA] = {
+    unfold((this, s2)) {
+      case (Cons(h1,t1), Cons(h2,t2)) =>
+        Option((f(h1(), h2()), (t1(), t2())))
+      case _ => None
+    }
+  }
+
   def takeWhileViaUnfold(f: A => Boolean): Stream[A] =
     unfold(this) {
       case Cons(h,t) if f(h()) => Some((h(), t()))
